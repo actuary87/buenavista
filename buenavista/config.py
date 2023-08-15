@@ -9,4 +9,4 @@ database_name = "test"
 postgres_proxy_server_port = 5433
 
 # DuckDB file
-duckdb_file = "test.db"
+duckdb_file = "example/test.duckdb"
