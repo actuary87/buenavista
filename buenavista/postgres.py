@@ -536,7 +536,10 @@ class BuenaVistaHandler(socketserver.StreamRequestHandler):
     def send_ready_for_query(self, ctx: Optional[BVContext]):
         logger.debug("Sending ready for query")
         status = ctx.transaction_status() if ctx else TransactionStatus.IDLE
-        self.wfile.write(struct.pack("!cic", ServerResponse.READY_FOR_QUERY, 5, status))
+        try:
+            self.wfile.write(struct.pack("!cic", ServerResponse.READY_FOR_QUERY, 5, status))
+        except:
+            pass
 
     def send_parameter_status(self, params: Dict[str, str]):
         for name, value in params.items():
