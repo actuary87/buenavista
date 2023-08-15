@@ -1,22 +1,32 @@
-# Buena Vista: A Programmable Postgres Proxy Server
+# Power BI loves DuckDB
 
-Buena Vista is a Python library that provides a [socketserver](https://docs.python.org/3/library/socketserver.html)-based implementation
-of the [Postgres wire protocol (PDF)](https://beta.pgcon.org/2014/schedule/attachments/330_postgres-for-the-wire.pdf).
+This is a fork from https://github.com/jwills/buenavista project.
 
-I started working on this project in order to address a common issue that people had when they were using another
-one of my Python projects, [dbt-duckdb](https://github.com/jwills/dbt-duckdb): when a long-running Python process
-is operating on a [DuckDB](http://duckdb.org) database, you cannot connect to the DuckDB file using the CLI or
-with a database query tool like [DBeaver](https://dbeaver.io/) to examine the state of the database, because each DuckDB file
-may only be open by a single process at a time. The Buena Vista library makes it possible to work with a DuckDB database
-from multiple different processes over the Postgres wire protocol, and the library makes it simple enough to run an example
-that illustrates the idea locally:
+The aim is to get Power BI to connect to DuckDB through Postgres wire protocal which enables Direct Query on DuckDB. This makes the Power BI file is relatively small as the data resides in the DuckDB file and the queries are sent to it where only results are sent back to Power BI.
 
-```sh
-pip3 install buenavista
-python3 -m buenavista.examples.duckdb_postgres <optional_duckdb_file>
-```
+Only postgres_proxy.py method is used.
 
-in order to start a Postgres server on `localhost:5433` backed by the DuckDB database file that you passed in at the command line
-(or by an in-memory DuckDB database if you do not specify an argument.) You should be able to query the database via `psql` in
-another window by running `psql -h localhost -p 5433` (no database/username/password arguments required) or by using the DBeaver
-Postgres client connection.
+## How does this project work:
+It is difficult to be able to process every valid SQL query and sends it DuckDB.
+
+Many of the queries Power BI will send to a real Postgres server won't affect the result (it's not pulling any data).
+
+In this project, the postgres_proxy.py sends those queries to a real Postgres Server to get a real response that makes Power BI happy.
+
+On the other hand, any SQL query that pulls actual data is redirected to the DuckDB file set in buenavista\config.py file.
+
+## To try the example I set in this repo, please do the following:
+
+1. pip install -r requirements.txt (you can use a venv as well if you prefer)
+2. Change the default values set in buenavista\config.py to the appropriate values
+3. You can open the folder of the project in VSCode and click Ctrl+F5 to run it without debugging (or F5 for debugging mode)
+4. Check the console for any errors: if you provide a wrong connection info to the real Postgres server you would see error messages instantly
+5. If all is fine you should see Listening on 127.0.0.1:5433 (assuming you kept the default proxy port of 5433)
+6. execute example\create_test_db_structure.sql on the real Postgres server after creating a database that matches the database name in the buenavista\config.py (test is the default value)
+7. The real server won't have any data.
+8. You can examine the two tables (customers and orders) in the DuckDB file using DBeaver (important: you have to close any connection to the DuckDB file though when you run the proxy server)
+9. example\PowerBI_loves_DuckDB.pbix file is already configured to connect to the Proxy server localhost:5433 with credentials postgres/postgres, db = test and it has one visual that summarizes the orders count and sum per person
+10. Try to make changes to the DuckDB (insert or update) and refresh Power BI to see the changes coming through
+11. In some cases, it's better to kill the Proxy server and re run it again
+
+I will try to post a tutorial on how to connect a new Power BI file to the proxy server/DuckDB with screenshots very soon.
