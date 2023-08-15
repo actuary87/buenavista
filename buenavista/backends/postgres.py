@@ -118,4 +118,4 @@ class PGConnection(Connection):
         self.pool.putconn(conn)
 
     def parameters(self) -> Dict[str, str]:
-        return {"server_version": "9.3.bvproxy", "client_encoding": "UTF8"}
+        return {"server_version": "9.3", "client_encoding": "UTF8"}
