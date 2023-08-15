@@ -1,7 +1,8 @@
 duckdb
-fastapi[all]
+pandas
+#fastapi[all]
 psycopg
 psycopg-pool
 pyarrow
-pytest
+#pytest
 sqlglot
