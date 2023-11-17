@@ -38,6 +38,7 @@ class PGQueryResult(QueryResult):
         rows: List[List[Optional[Any]]],
         status: Optional[str] = None,
     ):
+        super().__init__()
         self.fields = fields
         self._rows = rows
         self._status = status
