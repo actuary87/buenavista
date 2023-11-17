@@ -82,11 +82,11 @@ def _micros_since_2000(dt):
     return int(micros)
 
 
-PG_UNKNOWN = (705, str)
+PG_UNKNOWN = (25, str, lambda r: r.encode("utf-8"))
 BVTYPE_TO_PGTYPE = {
     BVType.NULL: (-1, lambda v: None),
     BVType.ARRAY: (2277, lambda v: "{" + ",".join(v) + "}", None),
-    BVType.BIGINT: (20, str, lambda r: int.to_bytes(r, 8, "big")),
+    BVType.BIGINT: (25, str, lambda r: str(r).encode("utf-8")),
     BVType.BOOL: (
         16,
         lambda v: "true" if v else "false",
@@ -96,11 +96,11 @@ BVTYPE_TO_PGTYPE = {
     BVType.DATE: (
         1082,
         lambda v: v.isoformat(),
-        lambda r: int.to_bytes((r.toordinal() - 730120), 4, "big"),
+        lambda r: int.to_bytes((r.toordinal() - 730120), 4, "big", signed=True),
     ),
-    BVType.DECIMAL: (1700, str),
+    BVType.DECIMAL: (25, str, lambda r: str(r).encode("utf-8")),
     BVType.FLOAT: (701, str, lambda r: struct.pack("!d", r)),
-    BVType.INTEGER: (23, str, lambda r: int.to_bytes(r, 4, "big")),
+    BVType.INTEGER: (25, str, lambda r: str(r).encode("utf-8")),
     BVType.INTEGERARRAY: (1007, lambda v: "{" + ",".join(v) + "}"),
     BVType.INTERVAL: (
         1186,
@@ -112,12 +112,12 @@ BVTYPE_TO_PGTYPE = {
     BVType.TIME: (
         1083,
         lambda v: v.isoformat(),
-        lambda r: int.to_bytes(_time_to_microseconds(r), 8, "big"),
+        lambda r: int.to_bytes(_time_to_microseconds(r), 8, "big", signed=True),
     ),
     BVType.TIMESTAMP: (
         1114,
         lambda v: v.isoformat().replace("T", " "),
-        lambda r: int.to_bytes(_micros_since_2000(r), 8, "big"),
+        lambda r: int.to_bytes(_micros_since_2000(r), 8, "big", signed=True),
     ),
 }
 
