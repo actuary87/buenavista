@@ -77,7 +77,7 @@ def _time_to_microseconds(t):
 
 def _micros_since_2000(dt):
     micros = (
-        dt - datetime.datetime(2000, 1, 1, tzinfo=datetime.timezone.utc)
+        dt.replace(tzinfo=datetime.timezone.utc) - datetime.datetime(2000, 1, 1, tzinfo=datetime.timezone.utc)
     ).total_seconds() * 1000000
     return int(micros)
 
